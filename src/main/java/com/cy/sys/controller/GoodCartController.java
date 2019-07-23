@@ -1,25 +1,24 @@
 package com.cy.sys.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.cy.common.vo.JsonResult;
+import com.cy.common.vo.PageObject;
+import com.cy.common.vo.User;
+import com.cy.sys.entity.GoodCart;
+import com.cy.common.vo.GoodCartVo;
+import com.cy.sys.service.GoodCartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cy.common.vo.JsonResult;
-import com.cy.common.vo.PageObject;
-import com.cy.sys.entity.GoodCart;
-import com.cy.sys.entity.GoodCartVo;
-import com.cy.sys.entity.User;
-import com.cy.sys.service.GoodCartService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping("/GoodCart/")
 public class GoodCartController {
-	@Autowired
+    @Autowired
     private GoodCartService goodCartService;
 
     @RequestMapping("findPageObjects")
@@ -47,8 +46,9 @@ public class GoodCartController {
         } catch (NumberFormatException e) {
             return new JsonResult(e);
         }
-//        HttpSession session = httpServletRequest.getSession(true);
-        User userInfo = User.builder().id(1).username("123").password("111").nickname("我淘").build();
+        HttpSession session = httpServletRequest.getSession(true);
+        User userInfo = (User) session.getAttribute("userInfo");
+//        User userInfo = User.builder().id(1).username("123").password("111").nickname("我淘").build();
         if (userInfo == null) {
             return new JsonResult(new Exception("用户未登录!"));
         }

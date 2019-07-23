@@ -31,7 +31,6 @@
 		$("#login").click(doLogin);
 	});
 	function doLogin() {
-		debugger
 		var params = {
 			nickname : $("#nickname").val(),
 			password : $("#password").val()
@@ -39,6 +38,7 @@
 		var url = "user/doLogin";
 		console.log("doLogin", params);
 		$.post(url, params, function(result) {
+		    debugger
 			if (result.state == 1) {
 				//跳转到indexUI对应的页面
 				$("#slogin").prop("hidden","hidden");

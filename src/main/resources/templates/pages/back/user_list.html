@@ -69,7 +69,7 @@
 	}
 
 	function doGetObjects() {
-		debugger
+		//debugger
 		var url = "user/doFindPageObjects"
 		var pageCurrent = $("#pageId").data("pageCurrent");
 		if (!pageCurrent)
@@ -87,7 +87,7 @@
 	}
 
 	function doHandleResponseResult(result) {
-		debugger
+		//debugger
 		if (result.state == 1) {
 			doSetPagination(result.data);
 			doSetTableBodyRows(result.data.records);
@@ -96,7 +96,7 @@
 		}
 	}
 	function doSetTableBodyRows(data) {
-		debugger
+		//debugger
 		//1.获取tbody对象，并清空内容
 		var tBody = $("#tbodyId");
 		tBody.empty();
@@ -142,7 +142,7 @@
 	}
 
 	function doQueryObjects() {
-		debugger
+		//debugger
 		$("#pageId").data("pageCurrent", 1);
 		doGetObjects();
 	}

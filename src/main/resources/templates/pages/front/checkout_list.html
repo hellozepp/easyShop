@@ -219,7 +219,7 @@
             type: "GET",
             dataType: "json",
             data: {},
-            url: '/UserInfo/queryUserInfo',
+            url: '/user/queryUserInfo',
             success: function (data) {
                 if (data.state == '1') {
                     user = data.data;
@@ -255,7 +255,6 @@
                             totalPrice += parseFloat($(".discount_price._" + item).text())
                                 * parseFloat($(".number._" + item).text())
                         });
-                        console.log(totalPrice);
                         //show this price
                         layer.open({
                             type: 1
@@ -277,7 +276,7 @@
                             moveType: 0 //拖拽模式，0或者1
                             ,
                             content: '<div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300;list-style:none">' +
-                                '<li style="font-size: 30pt;text-align: center"><b>￥ </b>&nbsp;<span>' + totalPrice + '</span></li><br><br>' +
+                                '<li style="font-size: 30pt;text-align: center"><b>￥ </b>&nbsp;<span>' + totalPrice.toFixed(2) + '</span></li><br><br>' +
                                 '收货地址:&nbsp;' + addressInfo.address +'<br>'+
                                 '收货人:&nbsp;' + addressInfo.name +'&nbsp;&nbsp;联系方式:&nbsp;' + addressInfo.phone +'<br><br>'+
                                 '我们会马上安排发货~ ^_^' +

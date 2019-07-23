@@ -2,7 +2,7 @@ package com.cy.sys.service;
 
 import com.cy.common.vo.PageObject;
 import com.cy.sys.entity.GoodCart;
-import com.cy.sys.entity.GoodCartVo;
+import com.cy.common.vo.GoodCartVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
