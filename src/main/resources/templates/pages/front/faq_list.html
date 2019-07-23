@@ -1,0 +1,88 @@
+<div class="breadcrumbs">
+	<div class="container">
+		<ol class="breadcrumb breadcrumb1 animated wow slideInLeft"
+			data-wow-delay=".5s">
+			<li><a href="index.html"><span
+					class="glyphicon glyphicon-home" aria-hidden="true"></span>主页</a></li>
+			<li class="active">帮助</li>
+		</ol>
+	</div>
+</div>
+<!-- //breadcrumbs -->
+<!-- help-page -->
+<div class="faq-w3agile">
+	<div class="container">
+		<h2 class="w3_agile_header">常见问题</h2>
+		<ul class="faq">
+			<li class="item1"><a href="#" title="click here">我们的商店是不是很吊?</a>
+				<ul>
+					<li class="subitem1"><p>大哥说的对~</p></li>
+				</ul></li>
+			<li class="item2"><a href="#" title="click here">如何登陆?忘记密码怎么办?</a>
+				<ul>
+					<li class="subitem1"><p>点击主页的登陆按钮根据提示操作~</p></li>
+				</ul></li>
+			<li class="item3"><a href="#" title="click here">超市的食品好不好吃?便不便宜</a>
+				<ul>
+					<li class="subitem1"><p>自己买了尝尝`</p></li>
+				</ul></li>
+			<li class="item4"><a href="#" title="click here">大海为什么是蓝色的</a>
+				<ul>
+					<li class="subitem1"><p>不知道</p></li>
+				</ul></li>
+			<li class="item5"><a href="#" title="click here">天空为什么是蓝色的</a>
+				<ul>
+					<li class="subitem1"><p>不知道</p></li>
+				</ul></li>
+			<li class="item6"><a href="#" title="click here">雪为什么是白色的?</a>
+				<ul>
+					<li class="subitem1"><p>不知道</p></li>
+				</ul></li>
+			<li class="item7"><a href="#" title="click here">你知道什么?</a>
+				<ul>
+					<li class="subitem1"><p>我啥也不知道</p></li>
+				</ul></li>
+			<li class="item8"><a href="#" title="click here">千万别打我们店的电话!!</a>
+				<ul>
+					<li class="subitem1"><p>那个电话是叫救护车的</p></li>
+				</ul></li>
+			<li class="item9"><a href="#" title="click here">你认不认识我??</a>
+				<ul>
+					<li class="subitem1"><p>不认识</p></li>
+				</ul></li>
+			<li class="item10"><a href="#" title="click here">????</a>
+				<ul>
+					<li class="subitem1"><p>哦</p></li>
+				</ul></li>
+		</ul>
+		<!-- script for tabs -->
+		<script type="text/javascript">
+			$(function() {
+
+				var menu_ul = $('.faq > li > ul'), menu_a = $('.faq > li > a');
+
+				menu_ul.hide();
+
+				menu_a.click(function(e) {
+					e.preventDefault();
+					if (!$(this).hasClass('active')) {
+						menu_a.removeClass('active');
+						menu_ul.filter(':visible').slideUp('normal');
+						$(this).addClass('active').next().stop(true, true)
+								.slideDown('normal');
+					} else {
+						$(this).removeClass('active');
+						$(this).next().stop(true, true).slideUp('normal');
+					}
+				});
+
+			});
+		</script>
+		<!-- script for tabs -->
+	</div>
+</div>
+<script type="text/javascript">
+	$(function() {
+
+	});
+</script>

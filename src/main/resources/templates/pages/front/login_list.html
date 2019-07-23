@@ -1,0 +1,60 @@
+<!-- breadcrumbs -->
+	<div class="breadcrumbs">
+		<div class="container">
+			<ol class="breadcrumb breadcrumb1 animated wow slideInLeft" data-wow-delay=".5s">
+				<li><a href="index.html"><span class="glyphicon glyphicon-home" aria-hidden="true"></span>主页</a></li>
+				<li class="active">登录页面</li>
+			</ol>
+		</div>
+	</div>
+<!-- //breadcrumbs -->
+<!-- login -->
+	<div class="login">
+		<div class="container">
+			<h2> 登 录 </h2>
+		
+			<div class="login-form-grids animated wow slideInUp" data-wow-delay=".5s">
+				<form>
+					<input id="nickname" type="text" placeholder="用户名" required=" " >
+					<input id="password" type="password" placeholder="密码" required=" " >
+					
+					<input id="login" type="submit" value="登录">
+				</form>
+			</div>
+			<h4>创建新用户</h4>
+			<p><a href="registered.html">点击创建</a>或者返回<a href="index.html">主页<span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></a></p>
+		</div>
+	</div>
+<!-- //login -->
+<script>
+	$(function() {
+		$("#login").click(doLogin);
+	});
+	function doLogin() {
+		debugger
+		var params = {
+			nickname : $("#nickname").val(),
+			password : $("#password").val()
+		}
+		var url = "user/doLogin";
+		console.log("doLogin", params);
+		$.post(url, params, function(result) {
+			if (result.state == 1) {
+				//跳转到indexUI对应的页面
+				$("#slogin").prop("hidden","hidden");
+				$("#sregister").prop("hidden","hidden");
+				$("#suserCenter").prop("hidden","");
+				$("#headSession").data("username",$("#nickname").val());
+	
+				var username=$("#nickname").val();
+				
+				$("#userInfo").prop("hidden","");
+				$("#userInfo").append("欢迎您，"+username);
+				$("#main").load("front/index_list");
+			} else {
+				 alert(result.message);
+			}
+			return false;//防止刷新时重复提交
+		});
+	}
+</script>

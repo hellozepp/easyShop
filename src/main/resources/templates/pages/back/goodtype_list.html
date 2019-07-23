@@ -1,0 +1,249 @@
+<!-- MAIN CONTENT -->
+<div class="main-content">
+	<!-- table 信息表格 -->
+	<div class="panel">
+		<div class="panel-heading">
+			<h3 class="panel-title">商品类型管理</h3>
+		</div>
+		<div class="input-group"
+			style="width: 35%; padding-right: 20px; float: right;">
+			<input id="searchName" class="form-control" type="text"> <span
+				class="input-group-btn">
+				<button id="search" class="btn btn-primary" type="button"
+					style="padding: 6px 15px;">
+					<span class="fa fa-search"></span>
+				</button>
+				<button type="button" class="btn btn-success"
+					style="padding: 6px 15px;">添加</button>
+				<button type="button" class="btn btn-danger"
+					style="padding: 6px 15px;">删除</button>
+			</span>
+		</div>
+		<br />
+		<div class="panel-body">
+			<table class="table table-hover">
+
+				<thead>
+					<tr>
+						<th style="width: 10%;"><input type="checkbox" id="checkAll">全选&nbsp;</th>
+						<th>编号</th>
+						<th>类别</th>
+						<th>父类编号</th>
+						<th>父类名称</th>
+						<th>url</th>
+						<th>等级</th>
+						<th>排序</th>
+						<th style="width: 10%;">操作</th>
+					</tr>
+				</thead>
+				<tbody id="tbodyId">
+
+					<tr>
+						<td><input type="checkbox" class='cBox' name="cItem"></td>
+						<td>5</td>
+						<td>Simon</td>
+						<td>Philips</td>
+						<td>@simon</td>
+						<td>aaaaaa</td>
+						<td>bbbbbb</td>
+						<td>
+							<button type="button" class="btn btn-info"
+								style="padding: 3px 10px;">修改</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id="pageId">
+			<!-- 加载分页按钮 -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$("#pageId").load("doPageUI", doGetObjects);
+
+		$("#search").on("click", doQueryObjects);
+
+		$("#checkAll").change(doChangeTBodyCheckBoxState);
+		$("#tbodyId").on("change", ".cBox", doChangeTHeadCheckBoxState);
+	});
+
+	function doLoadPageUI(title) {
+		var url = "back/goodtype_edit";
+		$(".main").load(url, function() {
+			$(".panel-title").html(title);
+		})
+	}
+
+	function doGetObjects() {
+
+		var url = "goodType/doFindPageObjects"
+		var pageCurrent = $("#pageId").data("pageCurrent");
+		if (!pageCurrent)
+			pageCurrent = 1
+		var params = {
+			"pageCurrent" : pageCurrent
+		};
+		params.name = $("#searchName").val().trim();
+
+		$.getJSON(url, params, function(result) {
+			doHandleResponseResult(result);
+
+		});
+		$("#checkAll").prop("checked", false);
+	}
+
+	function doHandleResponseResult(result) {
+		if (result.state == 1) {
+			doSetTableBodyRows(result.data.records);
+			doSetPagination(result.data);
+		} else {
+			alert(result.message);
+		}
+	}
+	function doSetTableBodyRows(data) {
+		//1.获取tbody对象，并清空内容
+		var tBody = $("#tbodyId");
+		tBody.empty();
+		//2.迭代data内容将数据追加到tbody中
+		for ( var i in data) {
+			var tr = $("<tr></tr>");
+			tr.data("rowData", data[i]);
+			var tds = doCreateTds(data[i]);
+			tr.append(tds);
+			var td = $("<td></td>");
+			var button = $("<button></button>");
+			button.prop("class", "btn btn-info");
+			button.prop("style", "padding: 3px 10px;");
+			button.append("修改");
+			td.append(button);
+			tr.append(td);
+			tBody.append(tr);
+		}
+		$(function() {
+			$(".btn-info").unbind('click').on("click", doLoadEditUI);
+			$(".btn-success").unbind('click').on("click", doLoadEditUI);
+			$(".btn-danger").unbind('click').on("click", dodeleteObjects);
+		})
+	}
+	function doCreateTds(row) {
+		var tds = "<td><input type='checkbox' class='cBox' name='cItem' value='"+row.id+"' ></td>"
+				+ "<td>"
+				+ row.id
+				+ "</td>"
+				+ "<td>"
+				+ row.name
+				+ "</td>"
+				+ "<td>"
+				+ row.parentId
+				+ "</td>"
+				+ "<td>"
+				+ row.parentName
+				+ "</td>"
+				+ "<td>"
+				+ row.url
+				+ "</td>"
+				+ "<td>"
+				+ row.type
+				+ "</td>" + "<td>" + row.sort + "</td>";
+		return tds;
+	}
+
+	function doQueryObjects() {
+		$("#pageId").data("pageCurrent", 1);
+		doGetObjects();
+	}
+
+	function doLoadEditUI() {
+		var title;
+		if ($(this).hasClass('btn-success')) {
+			title = "添加商品分类";
+			$(".main").removeData();
+			doLoadPageUI(title);
+		} else {
+			title = "修改商品分类"
+			var id = $(this).parents("tr").data("rowData");
+
+			var params = {
+				"id" : id.id
+			};
+			console.log(params);
+			var url = "goodType/doFindObjectById";
+			$.getJSON(url, params, function(result) {
+				if (result.state == 1) {
+					result.data.id = id;//在结果中动态追加id
+					$(".main").data("data", result.data);
+					doLoadPageUI(title);//异步加载页面  
+				} else {
+					alert(result.message);
+				}
+			});
+		}
+	}
+
+	function dodeleteObjects() {
+		var ids = doGetCheckedIds();
+		if (ids.length == 0) {
+			alert("请选择想要删除的类型");
+			return;
+		}
+		//2.发异步请求执行删除操作
+		var url = "goodType/doDeleteObjects";
+		var params = {
+			"ids" : ids.toString()
+		};
+
+		$.post(url, params, function(result) {
+			if (result.state == 1) {
+				alert(result.message);
+				doSetPageCurrent();
+				doGetObjects();
+			} else {
+				alert(result.message);
+			}
+		});
+	}
+
+	function doGetCheckedIds() {
+		var array = [];
+
+		$("#tbodyId input[type=checkbox]").each(function() {
+			if ($(this).prop("checked")) {
+				array.push($(this).val());
+			}
+		});
+		return array;
+	}
+	
+	function doSetPageCurrent(){
+		var pageCount = $("#pageId").data("pageCount");
+		var pageCurrent = $("#pageId").data("pageCurrent");
+		var flag = $("#checkAll").prop("checked");
+		if(pageCurrent==pageCount&&flag&&pageCurrent>1){
+			pageCurrent--;
+			$("#pageId").data("pageCurrent",pageCurrent);
+		} 
+	} 
+	
+	//设置thead中checkbox对象的状态
+	function doChangeTHeadCheckBoxState() {
+		//1.获取所有tbody中checkbox对象相与的结果.
+		var flag = true;
+		$("#tbodyId input[type='checkbox']").each(function() {
+			flag = flag && $(this).prop("checked");
+		})
+		//2.更新thead中checkbox状态
+		$("#checkAll").prop("checked", flag);
+	}
+	//设置tbody中checkbox对象状态
+	function doChangeTBodyCheckBoxState() {
+		//1.获取全选按钮状态
+		var flag = $(this).prop("checked");
+		//2.设置tbody对象中checkbox对象状态
+		$("#tbodyId input[type='checkbox']").each(function() {//callback
+			$(this).prop("checked", flag);
+		})
+	}
+</script>
+<!-- END MAIN CONTENT -->

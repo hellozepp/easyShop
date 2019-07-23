@@ -1,0 +1,4 @@
+说明：自定义异常类层
+包含：
+自定义异常类（ServiceException）
+全局异常类（GlobalExceptionHandler）

@@ -1,0 +1,188 @@
+<!-- MAIN CONTENT -->
+<div class="main-content">
+	<div class="panel">
+		<div class="panel-heading">
+			<h3 class="panel-title">日志信息</h3>
+		</div>
+		<div class="input-group"
+			style="width: 35%; padding-right: 20px; float: right;">
+			<input id="searchName" class="form-control" type="text"> <span
+				class="input-group-btn">
+				<button id="search" class="btn btn-primary" type="button"
+					style="padding: 6px 15px;">
+					<span class="fa fa-search"></span>
+				</button>
+				<button id="delete" type="button" class="btn btn-danger"
+					style="padding: 6px 15px;">删除</button>
+			</span>
+		</div>
+		<br />
+		<div class="panel-body">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="checkAll">全选&nbsp;</th>
+						<th>用户名</th>
+						<th>操作</th>
+						<th width="250px">请求方法</th> 
+						<th>请求参数</th>
+						<th>IP地址</th>
+						<th>执行时间</th>
+					</tr>
+				</thead>
+				<tbody id="tbodyId">
+				
+				</tbody>
+			</table>
+		</div>
+		<div id="pageId">
+			<!-- 加载分页按钮 -->
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$("#pageId").load("doPageUI",doGetObjects);
+		$("#search").unbind('click').on("click", doQuryObjects);
+		$("#delete").on("click", doDeleteObjects);
+	});
+
+	function doGetObjects() {
+
+		url = "log/doFindPageObject";
+		var pageCurrent = $("#pageId").data("pageCurrent");
+		if (!pageCurrent)
+			pageCurrent = 1;
+
+		var params = {
+			"pageCurrent" : pageCurrent
+		};
+		$.getJSON(url, params, function(result) {
+			doHandleResponseResult(result);
+		});
+		$("#checkAll").prop("checked", false);
+	}
+
+	function doQuryObjects(){
+		
+		$("#pageId").data("pageCurrent",1);
+		
+		url = "log/doFindPageObject";
+		var username = $("#searchName").val().trim();
+		var params = {
+			"pageCurrent" : 1
+		};
+		if (username)
+			params.username = username;
+		
+		$.getJSON(url, params, function(result) {
+			doHandleResponseResult(result);
+		});
+	}
+	
+	function doDeleteObjects(){
+		var ids = doGetCheckedIds();
+		if (ids.length == 0) {
+			alert("请选择想要删除的日志");
+			return;
+		}
+		//2.发异步请求执行删除操作
+		var url = "log/doDeleteObjects";
+		var params = {
+			"ids" : ids.toString()
+		};
+		
+		$.post(url, params, function(result) {
+			if (result.state == 1) {
+				alert(result.message);
+				doSetPageCurrent();
+				doGetObjects();
+			} else {
+				alert(result.message);
+			}
+		});
+	}
+	
+	function doHandleResponseResult(result) {
+		if (result.state == 1) {
+			doCreateTable(result.data.records);
+			doSetPagination(result.data);
+		} else {
+			alert(result.message);
+		}
+	}
+
+	function doCreateTable(data) {
+		var tbody = $("#tbodyId");
+		tbody.empty();
+		var pageCurrent = $("#pageId").data("pageCurrent");
+		if (!pageCurrent)
+			pageCurrent = 1;
+		var length = data.length;
+		for (var i = 0; i < length; i++) {
+			var tr = $("<tr></tr>");
+			tr.data("rowData", data[i]);
+			var tds = doCreateTds(data[i],(i+1+5*(pageCurrent-1)));
+			tr.append(tds);
+			tbody.append(tr);
+		}
+		
+		$(function(){
+			$("#checkAll").change(doChangeTBodyCheckBoxState);
+			$("#tbodyId").on("change", ".cBox", doChangeTHeadCheckBoxState);
+		})
+	}
+
+	function doCreateTds(row,i) {
+		var tds = "<td><input type='checkbox' class='cBox' value='"+row.id+"'>&nbsp;"+i+"</td>"
+				+ "<td>"+ row.username +"</td>"
+				+ "<td>"+ row.operation +"</td>"
+				+ "<td>"+ row.method +"</td>"
+				+ "<td>"+ row.params +"</td>"
+				+ "<td>"+ row.ip +"</td>"
+				+ "<td>" + row.time +"</td>";
+		return tds;
+	}
+	
+	function doSetPageCurrent(){
+		var pageCount = $("#pageId").data("pageCount");
+		var pageCurrent = $("#pageId").data("pageCurrent");
+		var flag = $("#checkAll").prop("checked");
+		if(pageCurrent==pageCount&&flag&&pageCurrent>1){
+			pageCurrent--;
+			$("#pageId").data("pageCurrent",pageCurrent);
+		} 
+	} 
+	
+	function doGetCheckedIds() {
+		var array = [];
+		$("#tbodyId input[type=checkbox]").each(function() {
+			if ($(this).prop("checked")) {
+				array.push($(this).val());
+			}
+		});
+		
+		return array;
+	}
+	
+	//设置thead中checkbox对象的状态
+	function doChangeTHeadCheckBoxState() {
+		//1.获取所有tbody中checkbox对象相与的结果.
+		var flag = true;
+		$("#tbodyId input[type='checkbox']").each(function() {
+			flag = flag && $(this).prop("checked");
+		})
+		//2.更新thead中checkbox状态
+		$("#checkAll").prop("checked", flag);
+	}
+	//设置tbody中checkbox对象状态
+	function doChangeTBodyCheckBoxState() {
+		//1.获取全选按钮状态
+		var flag = $(this).prop("checked");
+		//2.设置tbody对象中checkbox对象状态
+		$("#tbodyId input[type='checkbox']").each(function() {//callback
+			$(this).prop("checked", flag);
+		})
+	}
+</script>
+<!-- END MAIN CONTENT -->
